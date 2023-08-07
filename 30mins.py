@@ -17,27 +17,20 @@ class BreakNotifierApp(QWidget):
 
     def init_ui(self):
         self.setWindowTitle("Break Notifier")
-        self.setGeometry(100, 100, 350, 185)
+        self.setGeometry(100, 100, 300, 200)  # Increased height to accommodate the new checkbox
 
         layout = QVBoxLayout()
 
         interval_label = QLabel("Select Break Interval:")
-        self.interval_combo = QComboBox()
-        self.interval_combo.addItems([str(interval) + " mins" for interval in self.break_intervals])
+        self.custom_interval_checkbox = QCheckBox("Custom")
+        self.custom_interval_checkbox.stateChanged.connect(self.toggle_custom_inputs)
+        
+        self.interval_input = QComboBox()
+        self.interval_input.addItems([str(interval) + " mins" for interval in self.break_intervals])
 
         duration_label = QLabel("Select Break Duration:")
-        self.duration_combo = QComboBox()
-        self.duration_combo.addItems([str(duration) + " mins" for duration in self.break_durations])
-
-        custom_interval_checkbox = QCheckBox("Custom")
-        custom_interval_checkbox.stateChanged.connect(self.toggle_custom_interval_input)
-
-        self.custom_interval_input = QSpinBox()
-        self.custom_interval_input.setRange(1, 500)
-        self.custom_interval_input.hide()  # Initially hidden
-
-        custom_duration_checkbox = QCheckBox("Custom")
-        custom_duration_checkbox.stateChanged.connect(self.toggle_custom_duration_input)
+        self.duration_input = QComboBox()
+        self.duration_input.addItems([str(duration) + " mins" for duration in self.break_durations])
 
         self.custom_duration_input = QSpinBox()
         self.custom_duration_input.setRange(1, 500)
@@ -46,22 +39,18 @@ class BreakNotifierApp(QWidget):
         start_button = QPushButton("Start")
         start_button.clicked.connect(self.start_notifications)
 
+        layout.addWidget(self.custom_interval_checkbox)
         layout.addWidget(interval_label)
-        interval_h_layout = QHBoxLayout()
-        interval_h_layout.addWidget(self.interval_combo)
-        interval_h_layout.addWidget(custom_interval_checkbox)
-        interval_h_layout.addWidget(self.custom_interval_input)
-        layout.addLayout(interval_h_layout)
+        layout.addWidget(self.interval_input)
 
         layout.addSpacing(10)  # Add spacing between interval and duration inputs
 
         layout.addWidget(duration_label)
-        duration_h_layout = QHBoxLayout()
-        duration_h_layout.addWidget(self.duration_combo)
-        duration_h_layout.addWidget(custom_duration_checkbox)
-        duration_h_layout.addWidget(self.custom_duration_input)
-        layout.addLayout(duration_h_layout)
-        layout.addSpacing(10)
+        layout.addWidget(self.duration_input)
+        layout.addWidget(self.custom_duration_input)
+        
+        layout.addSpacing(20)  # Add spacing between duration input and Start button
+
         layout.addWidget(start_button)
 
         self.setLayout(layout)
