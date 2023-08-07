@@ -32,6 +32,10 @@ class BreakNotifierApp(QWidget):
         self.duration_input = QComboBox()
         self.duration_input.addItems([str(duration) + " mins" for duration in self.break_durations])
 
+        self.custom_interval_input = QSpinBox()
+        self.custom_interval_input.setRange(1, 500)
+        self.custom_interval_input.hide()  # Initially hidden
+
         self.custom_duration_input = QSpinBox()
         self.custom_duration_input.setRange(1, 500)
         self.custom_duration_input.hide()  # Initially hidden
@@ -42,6 +46,7 @@ class BreakNotifierApp(QWidget):
         layout.addWidget(self.custom_interval_checkbox)
         layout.addWidget(interval_label)
         layout.addWidget(self.interval_input)
+        layout.addWidget(self.custom_interval_input)
 
         layout.addSpacing(10)  # Add spacing between interval and duration inputs
 
@@ -67,21 +72,21 @@ class BreakNotifierApp(QWidget):
         self.tray_icon.setContextMenu(tray_menu)
         self.tray_icon.activated.connect(self.tray_icon_activated)
 
-    def toggle_custom_interval_input(self, state):
+    def toggle_custom_inputs(self, state):
         if state == Qt.Checked:
+            self.interval_input.hide()
+            self.duration_input.hide()
+            #self.custom_interval_checkbox.setText("Standard")
             self.custom_interval_input.show()
-            self.interval_combo.hide()
-        else:
-            self.custom_interval_input.hide()
-            self.interval_combo.show()
-
-    def toggle_custom_duration_input(self, state):
-        if state == Qt.Checked:
             self.custom_duration_input.show()
-            self.duration_combo.hide()
+            #self.custom_break_input.show()
         else:
             self.custom_duration_input.hide()
-            self.duration_combo.show()
+            self.custom_interval_input.hide()
+            self.interval_input.show()
+            self.duration_input.show()
+            #self.custom_interval_checkbox.setText("Custom")
+            
 
     def start_notifications(self):
         interval = int(self.interval_combo.currentText().split()[0])
