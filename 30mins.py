@@ -10,7 +10,7 @@ class BreakNotifierApp(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.break_intervals = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]
+        self.break_intervals = [20, 25, 30, 35, 40, 45]
         self.break_durations = [5, 10, 15, 20, 25, 30]
 
         self.init_ui()
@@ -31,27 +31,27 @@ class BreakNotifierApp(QWidget):
         
         self.interval_input = QComboBox()
         self.interval_input.addItems([str(interval) + " mins" for interval in self.break_intervals])
-        self.interval_input.setStyleSheet("font-family: 'Franklin Gothic'; font-size: 14px; font-weight: bold;")
+        self.interval_input.setStyleSheet("font-family: 'Franklin Gothic'; font-size: 16px;")
 
         duration_label = QLabel("Select Break Duration")
         duration_label.setStyleSheet("font-family: 'Franklin Gothic'; font-size: 16px; font-weight: bold;")
 
         self.duration_input = QComboBox()
         self.duration_input.addItems([str(duration) + " mins" for duration in self.break_durations])
-        self.duration_input.setStyleSheet("font-family: 'Franklin Gothic'; font-size: 16px; font-weight: bold;")
+        self.duration_input.setStyleSheet("font-family: 'Franklin Gothic'; font-size: 16px;")
 
         self.custom_interval_input = QSpinBox()
         self.custom_interval_input.setRange(1, 500)
-        self.custom_interval_input.setStyleSheet("font-family: 'Franklin Gothic'; font-size: 14px; font-weight: bold;")
+        self.custom_interval_input.setStyleSheet("font-family: 'Franklin Gothic'; font-size: 16px;")
         self.custom_interval_input.hide()  # Initially hidden
 
         self.custom_duration_input = QSpinBox()
         self.custom_duration_input.setRange(1, 500)
-        self.custom_duration_input.setStyleSheet("font-family: 'Franklin Gothic'; font-size: 14px; font-weight: bold;")
+        self.custom_duration_input.setStyleSheet("font-family: 'Franklin Gothic'; font-size: 16px;")
         self.custom_duration_input.hide()  # Initially hidden
 
         start_button = QPushButton("Start")
-        start_button.clicked.connect(self.start_notifications)
+        start_button.clicked.connect(self.start)
         start_button.setStyleSheet("font-family: 'Franklin Gothic'; font-size: 16px; background-color: #007acc; color: white; font-weight: bold;")
 
         layout.addWidget(self.custom_interval_checkbox)
@@ -78,6 +78,9 @@ class BreakNotifierApp(QWidget):
         tray_menu = QMenu()
         tray_menu.addAction(show_action)
         tray_menu.addAction(quit_action)
+
+    def start(self):
+        print("d")
 
     def toggle_custom_inputs(self, state):
         if state == Qt.Checked:
@@ -132,5 +135,5 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     main_window = BreakNotifierApp()
     main_window.show()
-    app.setStyle("Fusion")
+    app.setStyle("Windows")
     sys.exit(app.exec_())
