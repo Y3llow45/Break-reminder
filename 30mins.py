@@ -1,9 +1,7 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QComboBox, QSystemTrayIcon, QMenu, QAction, QHBoxLayout, QCheckBox, QSpinBox
-from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QComboBox, QSystemTrayIcon, QMenu, QAction, QCheckBox, QSpinBox
 from PyQt5.QtCore import Qt
 import sys
 import time
-import datetime
 from win10toast import ToastNotifier
 
 class BreakNotifierApp(QWidget):
@@ -17,7 +15,7 @@ class BreakNotifierApp(QWidget):
 
     def init_ui(self):
         self.setWindowTitle("Break Notifier")
-        self.setGeometry(100, 100, 400, 300)  # Increased height to accommodate the new checkbox
+        self.setGeometry(100, 100, 400, 300)
 
         self.setStyleSheet("background-color: #222; color: white;")
 
@@ -43,15 +41,15 @@ class BreakNotifierApp(QWidget):
         self.custom_interval_input = QSpinBox()
         self.custom_interval_input.setRange(1, 500)
         self.custom_interval_input.setStyleSheet("font-family: 'Franklin Gothic'; font-size: 16px;")
-        self.custom_interval_input.hide()  # Initially hidden
+        self.custom_interval_input.hide()
 
         self.custom_duration_input = QSpinBox()
         self.custom_duration_input.setRange(1, 500)
         self.custom_duration_input.setStyleSheet("font-family: 'Franklin Gothic'; font-size: 16px;")
-        self.custom_duration_input.hide()  # Initially hidden
+        self.custom_duration_input.hide()
 
         start_button = QPushButton("Start")
-        start_button.clicked.connect(self.start)
+        start_button.clicked.connect(self.get_values)
         start_button.setStyleSheet("font-family: 'Franklin Gothic'; font-size: 16px; background-color: #007acc; color: white; font-weight: bold;")
 
         layout.addWidget(self.custom_interval_checkbox)
@@ -59,13 +57,13 @@ class BreakNotifierApp(QWidget):
         layout.addWidget(self.interval_input)
         layout.addWidget(self.custom_interval_input)
 
-        layout.addSpacing(10)  # Add spacing between interval and duration inputs
+        layout.addSpacing(10) 
 
         layout.addWidget(duration_label)
         layout.addWidget(self.duration_input)
         layout.addWidget(self.custom_duration_input)
         
-        layout.addSpacing(20)  # Add spacing between duration input and Start button
+        layout.addSpacing(20)
 
         layout.addWidget(start_button)
 
@@ -79,8 +77,29 @@ class BreakNotifierApp(QWidget):
         tray_menu.addAction(show_action)
         tray_menu.addAction(quit_action)
 
-    def start(self):
-        print("d")
+    def get_values(self):
+        self.hide()
+        if self.custom_interval_checkbox.isChecked():
+            interval_value = self.custom_interval_input.value()
+            #print(f"Custom Interval Selected: {interval_value} minutes")
+            duration_value = self.custom_duration_input.value()
+            #print(f"Custom Duration Selected: {duration_value} minutes")
+            self.start(interval_value, duration_value)
+        else:
+            interval_index = self.interval_input.currentIndex()
+            interval_value = self.break_intervals[interval_index]
+            #print(f"Standard Interval Selected: {interval_value} minutes")
+            duration_index = self.duration_input.currentIndex()
+            duration_value = self.break_durations[duration_index]
+            #print(f"Standard Duration Selected: {duration_value} minutes")
+            self.start(self, interval_value, duration_value)
+
+    def start(self, interval_value, duration_value):
+        while True:
+            time.sleep((interval_value*60)-4)
+            self.show_notification("TAKE A BREAK", "break", duration_value)
+            time.sleep((duration_value*60)-4)
+            self.show_notification("GET BACK TO WORK", "work", interval_value)
 
     def toggle_custom_inputs(self, state):
         if state == Qt.Checked:
@@ -97,28 +116,9 @@ class BreakNotifierApp(QWidget):
             self.duration_input.show()
             #self.custom_interval_checkbox.setText("Custom")
             
-
-    def start_notifications(self):
-        interval = int(self.interval_combo.currentText().split()[0])
-        duration = int(self.duration_combo.currentText().split()[0])
-
-        self.hide()
-
-        current_time = datetime.datetime.now()
-        next_notification_time = current_time + datetime.timedelta(minutes=interval)
-
-        while True:
-            time.sleep((next_notification_time - current_time).total_seconds())
-            self.show_notification()
-            
-            current_time = datetime.datetime.now()
-            next_notification_time = current_time + datetime.timedelta(minutes=interval)
-            
-            time.sleep((duration - 4) * 60)  # Sleep for break duration minus notification duration
-
-    def show_notification(self):
+    def show_notification(self, text, stext, duration):
         toast = ToastNotifier()
-        toast.show_toast("TAKE A BREAK", "5 min break", duration=4)
+        toast.show_toast(text, f"{duration} min {stext}", duration=4)
 
     def restore_from_tray(self):
         self.showNormal()
