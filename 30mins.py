@@ -92,7 +92,7 @@ class BreakNotifierApp(QWidget):
             duration_index = self.duration_input.currentIndex()
             duration_value = self.break_durations[duration_index]
             #print(f"Standard Duration Selected: {duration_value} minutes")
-            self.start(self, interval_value, duration_value)
+            self.start(interval_value, duration_value)
 
     def start(self, interval_value, duration_value):
         while True:
